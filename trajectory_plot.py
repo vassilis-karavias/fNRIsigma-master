@@ -1,4 +1,7 @@
-
+'''
+This code is based on https://github.com/ekwebb/fNRI which in turn is based on https://github.com/ethanfetaya/NRI
+(MIT licence)
+'''
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
@@ -103,6 +106,12 @@ def draw_lines_animation(output,linestyle='-',alpha=1,darker=False,linewidth=2, 
         # animation step
         xlist = []
         ylist = []
+        # for j in range(len(loc_new_x)):
+        #     for k in range(len(loc_new_x[j])):
+        #         x = loc_new_x[j][k]
+        #         y = loc_new_y[j][k]
+        #         xlist.append(x)
+        #         ylist.append(y)
         if (i<=50):
             for j in range(len(loc_new_x)):
                 for k in range(len(loc_new_x[j])):

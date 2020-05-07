@@ -1,7 +1,7 @@
-"""
-This code is based on https://github.com/ethanfetaya/NRI
+'''
+This code is based on https://github.com/ekwebb/fNRI which in turn is based on https://github.com/ethanfetaya/NRI
 (MIT licence)
-"""
+'''
 from synthetic_sim_physerrors import *
 import time
 import numpy as np

@@ -1,7 +1,7 @@
-"""
-This code is based on https://github.com/ethanfetaya/NRI
+'''
+This code is based on https://github.com/ekwebb/fNRI which in turn is based on https://github.com/ethanfetaya/NRI
 (MIT licence)
-"""
+'''
 from synthetic_sim import *
 import time
 import numpy as np
@@ -21,17 +21,17 @@ parser.add_argument('--length-test', type=int, default=10000,
                     help='Length of test set trajectory.')
 parser.add_argument('--sample-freq', type=int, default=100,
                     help='How often to sample the trajectory.')
-parser.add_argument('--n-balls', type=int, default=4,
+parser.add_argument('--n-balls', type=int, default=5,
                     help='Number of balls in the simulation.')
 parser.add_argument('--seed', type=int, default=42,
                     help='Random seed.')
-parser.add_argument('--savefolder', type=str, default='springcharge_4',
+parser.add_argument('--savefolder', type=str, default='springcharge_5',
                     help='name of folder to save everything in')
 parser.add_argument('--sim-type', type=str, default='springcharge',
                     help='Type of simulation system')
 parser.add_argument('--timesteptest', type=str, default=False,
                     help='Generate many datasets with different sampling frequencies')
-parser.add_argument('--noise_type', type=str, default='Normal',
+parser.add_argument('--noise_type', type=str, default='',
                     help='Type of noise we want to use. Normal, Uniform, Pink, Brownian or Thermal.')
 
 args = parser.parse_args()

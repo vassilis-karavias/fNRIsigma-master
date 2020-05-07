@@ -1,5 +1,5 @@
 """
-This code is based on https://github.com/ethanfetaya/NRI
+This code is based on https://github.com/ekwebb/fNRI which in turn is based on https://github.com/ethanfetaya/NRI
 (MIT licence)
 """
 from __future__ import division
@@ -47,12 +47,12 @@ parser.add_argument('--dont-split-data', action='store_true', default=False,
 parser.add_argument('--split-enc-only', action='store_true', default=False,
                     help='Whether to give the encoder the first half of trajectories \
                           and the decoder the whole of the trajectories')
-parser.add_argument('--loss_type', type=str, default='norminvwishart',
+parser.add_argument('--loss_type', type=str, default='anisotropic',
                     help='The loss function to be used. Can be one of "fixed_var", "isotropic", "anisotropic", "semi_isotropic", "lorentzian","norminvwishart","kalmanfilter", "ani_convex" (with thanks to Edoardo Calvello for the algorithm) or "KL"')
 
 
 ## arguments related to loss function ##
-parser.add_argument('--var', type=float, default=5e-5,
+parser.add_argument('--var', type=float, default=1e-10,
                     help='Output variance.')
 parser.add_argument('--beta', type=float, default=1.0,
                     help='KL-divergence beta factor')
@@ -86,7 +86,7 @@ parser.add_argument('--decoder-hidden', type=int, default=32,
                     help='Number of hidden units.')
 parser.add_argument('--temp', type=float, default=0.5,
                     help='Temperature for Gumbel softmax.')
-parser.add_argument('--temp_softplus', type=float, default=5,
+parser.add_argument('--temp_softplus', type=float, default=10,
                     help='Temperature for softplus.')
 parser.add_argument('--temp_sigmoid', type=float, default= 25,
                     help='Temperature for sigmoid for the changing loss function')
@@ -100,7 +100,7 @@ parser.add_argument('--prior', action='store_true', default=False,
                     help='Whether to use sparsity prior.')
 
 ## arguments related to the simulation data ##
-parser.add_argument('--sim-folder', type=str, default='springcharge_smalldatasetforgputest',
+parser.add_argument('--sim-folder', type=str, default='springcharge_pinknoise',
                     help='Name of the folder in the data folder to load simulation data from')
 parser.add_argument('--phys-folder', type=str, default='springcharge_physerrors_1',
                     help='Name of the folder in the data folder to load physical errors from')
@@ -122,10 +122,10 @@ parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
 parser.add_argument('--save-folder', type=str, default='logs',
                     help='Where to save the trained model, leave empty to not save anything.')
-parser.add_argument('--load-folder', type=str, default='',
+parser.add_argument('--load-folder', type=str, default='logs_Pinknoise',
                     help='Where to load the trained model if finetunning. ' +
                          'Leave empty to train from scratch')
-parser.add_argument('--test', action='store_true', default=False,
+parser.add_argument('--test', action='store_true', default=True,
                     help='Skip training and validation')
 parser.add_argument('--plot', action='store_true', default=False,
                     help='Skip training and plot trajectories against actual')
@@ -344,7 +344,7 @@ if not args.test:
             trainer.log.flush()
     else:
         # plot graphs for validation set ignoring the training
-        trainer = tfn.Trainer(args)
+        trainer = tfn.Trainer(args,  edge_types, log_prior, encoder_file, decoder_file, current_encoder_file, current_decoder_file, log, loss_data, csv_writer, perm_writer, encoder, decoder, optimizer, scheduler)
         trainer.train_plot(0, args)
 
 # test
