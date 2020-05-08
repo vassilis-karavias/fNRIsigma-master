@@ -2073,10 +2073,12 @@ class NormalInverseWishart(object):
 
 
 def batch_diagonal(input):
+    '''
     # Taken from https://github.com/pytorch/pytorch/issues/12160
 
-
     # idea from here: https://discuss.pytorch.org/t/batch-of-diagonal-matrix/13560
+
+    '''
     # batches a stack of vectors (batch x N) -> a stack of diagonal matrices (batch x N x N)
     # works in  2D -> 3D, should also work in higher dimensions
     # make a zero matrix, which duplicates the last dim of input
