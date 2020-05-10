@@ -11,7 +11,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--num-train', type=int, default=100,
+parser.add_argument('--num-train', type=int, default=10,
                     help='Number of training simulations to generate.')
 parser.add_argument('--num-valid', type=int, default=10000,
                     help='Number of validation simulations to generate.')
@@ -98,7 +98,7 @@ if (args.timesteptest):
     X, Y = np.meshgrid(x,y)
     fig = plt.figure()
     ax = plt.axes(projection = '3d')
-    ax.plot_surface(X,Y,Z, cmap = 'viridis', edgecolor= 'none')
+    ax.plot_surface(X,Y,Z, cmap = 'plasma', edgecolor= 'none')
     ax.set_ylabel('Time-step of Integration')
     ax.set_xlabel('Time along trajectory')
     ax.set_zlabel('Averaged Mean Square Error')

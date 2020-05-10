@@ -14,7 +14,7 @@ Supervisor: Pietro Lió
     I show that it is necessary to consider the physical meaning of the variables when considering the uncertainty, indicating that a significant component of the uncertainty is physical. I further show that the increased dimensionality allows the NN to find undesirable local minima. I show that it is possible to use convexification to force the model into a more desirable minimum. I also show that complicating the models is detrimental to performance. Finally, I show that the minimum the model reaches depends not only on the loss function but also on the choice of initial conditions. 
 
 
-Much of the code here is based on https://github.com/ekwebb/fNRI (MIT licence). The author would like to thank Ezra Webb, Ben Day, Helena Andres-Terre and Pietro Lió for making the codebase for the factorised Neural Relational Inference model (arXiv:1905.08721) publicly available. The author would also like to thank Thomas Kipf, Ethan Fetaya, Kuan-Chieh Wang, Max Welling & Richard Zemel for making the codebase for the Neural Relational Inference model (arXiv:1802.04687) publicly available on https://github.com/ethanfetaya/NRI (MIT licence).
+Much of the code here is based on https://github.com/ekwebb/fNRI (MIT licence) which in turn is based on https://github.com/ethanfetaya/NRI (MIT licence). The author would like to thank Ezra Webb, Ben Day, Helena Andres-Terre and Pietro Lió for making the codebase for the factorised Neural Relational Inference model (arXiv:1905.08721) publicly available on  https://github.com/ekwebb/fNRI (MIT licence). The author would also like to thank Thomas Kipf, Ethan Fetaya, Kuan-Chieh Wang, Max Welling & Richard Zemel for making the codebase for the Neural Relational Inference model (arXiv:1802.04687) publicly available on https://github.com/ethanfetaya/NRI (MIT licence).
 
 ### Requirements
 * Pytorch 1.3.1
@@ -28,7 +28,7 @@ To replicate the experiments on simulated physical data, first generate training
 cd data
 python generate_dataset.py
 ```
-This generates the ideal springs and charges dataset as in the experiments ran in this paper.
+This generates the ideal springs and charges dataset as in the experiments ran in this paper. To add noise change the parameter `--noise_type` to `--noise_type Pink` for pink noise. Change it to `--noise_type Brownian` for Brownian noise. 
 Then, generate the data for the computational and physical errors by running:
 
 ```
@@ -55,3 +55,12 @@ The different models that can be trained are:\
  To plot the data from a model that has been trained, use the `--plot` argument. To load the data from the folder stored add the parameter: `--load-folder name_of_folder_the_data_is_stored`. Then to plot add: `--plot True`
  To change sigma add the parameter `--var value_of_sigma_sqrd`
  To use the 3-layer MLP model or the model with random features modify the argument `--decoder`. For the 3-layer MLP use:  `--decoder mlp3` and for adding random features use `--decoder mlpr`. By default it is set to use the 2-layer MLP model.
+ 
+ To train using the correlations model from the root folder run 
+ ```
+python train_sigmawcorrelations.py
+```
+To train using log(σ^2) from the root folder run
+```
+python train_logsigma.py
+```

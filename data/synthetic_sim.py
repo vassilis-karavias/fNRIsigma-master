@@ -12,56 +12,7 @@ import numpy.random as rn
 from numpy.random import PCG64
 
 
-def powerlawnoise(loc, vel, exponent, length=100000, deltaT=0.001, scale_factor = 4):
-    """
-    Adapted from https://github.com/felixpatzelt/colorednoise/blob/master/colorednoise.py to our purposes##
 
-    Based on the algorithm in:
-    Timmer, J. and Koenig, M.:
-    On generating power law noise.
-    Astron. Astrophys. 300, 707-710 (1995)
-
-    """
-    min_freq = 1/length
-    # Nyquisit frequency- we sample at 1/DT which needs to be 2*max frequency => max frequency = 1/2DT
-    max_freq = 1/(2*deltaT)
-    floc = np.fft.rfftn(loc)
-    # absolute to get the indices correct
-    freqs = np.abs(np.fft.rfftfreq(floc.shape[0],deltaT))
-    idx = np.where(np.logical_and(freqs >= min_freq, freqs <= max_freq))[0]
-    floc = floc[idx]
-    # var goes as f^exponent => sigma goes as f^exponent/2
-    scalefactors = freqs[idx] ** (exponent /2)
-    # generate random power + phase
-    scalefactors = np.tile(scalefactors, (floc.shape[2],floc.shape[1],1)).transpose()
-    rpow = np.random.normal(scale=scalefactors, size= floc.shape)
-    rph = np.random.normal(scale=scalefactors, size= floc.shape)
-    # DC component must be real
-    rph[0,:,:] = 0
-    rph[-1,:,:] = 0
-
-    noise = rpow + 1J* rph
-    loc_noise = scale_factor * np.fft.irfftn(noise, s=loc.shape)
-    loc = loc + loc_noise
-
-    # fvel = np.fft.rfftn(vel)
-    # # absolute to get the indices correct
-    # freqs = np.abs(np.fft.rfftfreq(fvel.shape[0], deltaT))
-    # idx = np.where(np.logical_and(freqs >= min_freq, freqs <= max_freq))[0]
-    # fvel = fvel[idx]
-    # # var goes as f^exponent => sigma goes as f^exponent/2
-    # scalefactors = freqs[idx] ** (exponent / 2)
-    # # generate random power + phase
-    # scalefactors = np.tile(scalefactors, (fvel.shape[2], fvel.shape[1], 1)).transpose()
-    # rpow = np.random.normal(scale=scalefactors, size=fvel.shape)
-    # rph = np.random.normal(scale=scalefactors, size=fvel.shape)
-    # # DC component must be real
-    # rph[0, :, :] = 0
-    # rph[-1, :, :] = 0
-    # noise = rpow + 1J * rph
-    # vel_noise = np.fft.irfftn(noise, s=vel.shape)
-    # vel = vel + vel_noise
-    return loc, vel
 
 class NoForcesSim(object):
     def __init__(self, n_balls=5, box_size=5., loc_std=.5, vel_norm=.5, noise_var=0., delta_T=0.001):
@@ -455,6 +406,63 @@ class ChargedParticlesSim(object):
             loc += np.random.randn(T_save, 2, self.n_balls) * self.noise_var
             vel += np.random.randn(T_save, 2, self.n_balls) * self.noise_var
             return loc, vel, edges
+
+
+
+
+def powerlawnoise(loc, vel, exponent, length=100000, deltaT=0.001, scale_factor = 4):
+    """
+    Adapted from https://github.com/felixpatzelt/colorednoise/blob/master/colorednoise.py to our purposes##
+    (MIT license)
+
+    Based on the algorithm in:
+    Timmer, J. and Koenig, M.:
+    On generating power law noise.
+    Astron. Astrophys. 300, 707-710 (1995)
+
+    """
+    min_freq = 1/length
+    # Nyquisit frequency- we sample at 1/DT which needs to be 2*max frequency => max frequency = 1/2DT
+    max_freq = 1/(2*deltaT)
+    floc = np.fft.rfftn(loc)
+    # absolute to get the indices correct
+    freqs = np.abs(np.fft.rfftfreq(floc.shape[0],deltaT))
+    idx = np.where(np.logical_and(freqs >= min_freq, freqs <= max_freq))[0]
+    floc = floc[idx]
+    # var goes as f^exponent => sigma goes as f^exponent/2
+    scalefactors = freqs[idx] ** (exponent /2)
+    # generate random power + phase
+    scalefactors = np.tile(scalefactors, (floc.shape[2],floc.shape[1],1)).transpose()
+    rpow = np.random.normal(scale=scalefactors, size= floc.shape)
+    rph = np.random.normal(scale=scalefactors, size= floc.shape)
+    # DC component must be real
+    rph[0,:,:] = 0
+    rph[-1,:,:] = 0
+
+    noise = rpow + 1J* rph
+    loc_noise = scale_factor * np.fft.irfftn(noise, s=loc.shape)
+    loc = loc + loc_noise
+
+    # fvel = np.fft.rfftn(vel)
+    # # absolute to get the indices correct
+    # freqs = np.abs(np.fft.rfftfreq(fvel.shape[0], deltaT))
+    # idx = np.where(np.logical_and(freqs >= min_freq, freqs <= max_freq))[0]
+    # fvel = fvel[idx]
+    # # var goes as f^exponent => sigma goes as f^exponent/2
+    # scalefactors = freqs[idx] ** (exponent / 2)
+    # # generate random power + phase
+    # scalefactors = np.tile(scalefactors, (fvel.shape[2], fvel.shape[1], 1)).transpose()
+    # rpow = np.random.normal(scale=scalefactors, size=fvel.shape)
+    # rph = np.random.normal(scale=scalefactors, size=fvel.shape)
+    # # DC component must be real
+    # rph[0, :, :] = 0
+    # rph[-1, :, :] = 0
+    # noise = rpow + 1J * rph
+    # vel_noise = np.fft.irfftn(noise, s=vel.shape)
+    # vel = vel + vel_noise
+    return loc, vel
+
+
 
 class SpringChargeSim(object):
     def __init__(self, n_balls=5, box_size=5., loc_std=.5, vel_norm=.5, noise_var=0.,

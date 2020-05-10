@@ -504,9 +504,10 @@ def nll_gaussian_variablesigma(preds, target, sigma, epoch, temperature, total_e
         variance = torch.max(variance, accuracy)
     neg_log_p = ((preds - target) ** 2 / (2 * variance))
     # additional terms to add if we want to test how biasing helps
-                #+ 0.1* (1-sigmoid(epoch, total_epochs/2, temperature)) * ((preds-target) ** 2 +variance)
-    # np.exp(-epoch/temperature) *
-    # neg_log_p = ((preds - target) ** 2 / (2 * variance))- 0.0000001/ sigma
+    # biasing with sigmoid envelope
+     #+ 0.1* (1-sigmoid(epoch, total_epochs/2, temperature)) * ((preds-target) ** 2 +variance)
+    # biasing without envelope
+    # + 0.1 * ((preds-target) ** 2 + variance)
     loss_1 = neg_log_p
     loss_2 = 0.0
     if add_const:
@@ -2289,3 +2290,16 @@ def nll_Normal_Inverse_WishartLoss(preds, sigma, accel, vel, prior_pos, prior_ve
     loss = loss_term_1_pos + loss_term_1_vel + loss_term_2_pos + loss_term_2_vel + loss_term_3_pos + loss_term_3_vel
     return loss.sum() / (preds.size(0) * preds.size(1)), ((loss).sum(dim=1)/preds.size(1)).var()
 
+# initialises a Tensor of log(sigma^2) values of size [batchsize, no. of particles, time,no. of axes (isotropic = 1, anisotropic = 4)]
+def initlogsigma(batchsize, time, anisotropic, noofparticles, initvar):
+    if anisotropic:
+        ani = 4
+    else:
+        ani = 1
+    sigma = np.zeros((batchsize, noofparticles, time, ani), dtype = np.float32)
+    for i in range(len(sigma)):
+        for j in range(len(sigma[i])):
+            for l in range(len(sigma[i][j])):
+                for m in range(len(sigma[i][j][l])):
+                    sigma[i][j][l][m] = np.log(np.float32(initvar) ** 2)
+    return torch.from_numpy(sigma)

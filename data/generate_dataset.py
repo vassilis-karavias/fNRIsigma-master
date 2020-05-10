@@ -25,13 +25,13 @@ parser.add_argument('--n-balls', type=int, default=5,
                     help='Number of balls in the simulation.')
 parser.add_argument('--seed', type=int, default=42,
                     help='Random seed.')
-parser.add_argument('--savefolder', type=str, default='springcharge_5',
+parser.add_argument('--savefolder', type=str, default='springcharge_pk',
                     help='name of folder to save everything in')
 parser.add_argument('--sim-type', type=str, default='springcharge',
                     help='Type of simulation system')
 parser.add_argument('--timesteptest', type=str, default=False,
                     help='Generate many datasets with different sampling frequencies')
-parser.add_argument('--noise_type', type=str, default='',
+parser.add_argument('--noise_type', type=str, default='Pink',
                     help='Type of noise we want to use. Normal, Uniform, Pink, Brownian or Thermal.')
 
 args = parser.parse_args()
@@ -42,7 +42,7 @@ par_file.flush()
 par_file.close()
 
 if args.sim_type == 'springcharge':
-    sim = SpringChargeSim(noise_var=0.03, n_balls=args.n_balls, box_size=5.0, noise_type = args.noise_type)
+    sim = SpringChargeSim(noise_var=0.0, n_balls=args.n_balls, box_size=5.0, noise_type = args.noise_type)
 
 elif args.sim_type == 'springchargequad':
     sim = SpringChargeQuadSim(noise_var=0.0, n_balls=args.n_balls, box_size=5.0)

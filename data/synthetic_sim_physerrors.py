@@ -539,7 +539,7 @@ class SpringChargeSim(object):
             np.fill_diagonal(charge_edges, 0)
             edges = np.concatenate((np.expand_dims(spring_edges, 0), np.expand_dims(charge_edges, 0)), axis=0)
         # loc, vel gives the locations and velocities of the particles in this step
-        sigma_1 = [0, 0.00001, 0.00005, 0.0001,0.0002,0.0003, 0.0004,0.0005,0.0006, 0.0007, 0.0008, 0.0009, 0.001,0.0012, 0.0014, 0.0016, 0.0018, 0.002, 0.00707, 0.01, 0.05, 0.1, 0.5]
+        sigma_1 = [0, 0.00001, 0.00005, 0.0001,0.0002,0.0003, 0.0004,0.0005,0.0006, 0.0007, 0.0008, 0.0009, 0.001,0.0012, 0.0014, 0.0016, 0.0018, 0.002, 0.00707, 0.01, 0.05, 0.10]
         for i in sigma_1:
             loc_mse_persigma = []
             vel_mse_persigma = []

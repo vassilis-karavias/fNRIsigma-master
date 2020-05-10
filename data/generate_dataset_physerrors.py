@@ -13,7 +13,7 @@ import matplotlib
 import matplotlib.colors as mcolors
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--num-train', type=int, default=30,
+parser.add_argument('--num-train', type=int, default=10,
                     help='Number of training simulations to generate.')
 parser.add_argument('--num-valid', type=int, default=10000,
                     help='Number of validation simulations to generate.')
@@ -29,7 +29,7 @@ parser.add_argument('--n-balls', type=int, default=5,
                     help='Number of balls in the simulation.')
 parser.add_argument('--seed', type=int, default=42,
                     help='Random seed.')
-parser.add_argument('--savefolder', type=str, default='springcharge_physerrors_1',
+parser.add_argument('--savefolder', type=str, default='springcharge_physerrors__1',
                     help='name of folder to save everything in')
 parser.add_argument('--sim-type', type=str, default='springcharge',
                     help='Type of simulation system')
@@ -101,17 +101,17 @@ if args.sigmatest:
     Z_minussigma = (np.asarray(mse_loc - mse_loc_var)).mean(axis=2)
     X, Y = np.meshgrid(x,y)
     fig = plt.figure()
-    cmaps = [matplotlib.cm.get_cmap('viridis')(i) for i in np.linspace(0,1,100)]
+    cmaps = [matplotlib.cm.get_cmap('plasma')(i) for i in np.linspace(0,1,100)]
     for i in range(len(cmaps)):
         r, g, b, a = cmaps[i]
         a = 0.25
         cmaps[i] = (r, g, b, a)
     cmaps = mcolors.ListedColormap(cmaps)
     ax = plt.axes(projection = '3d')
-    pl = ax.plot_surface(X,Y,Z, cmap = 'viridis', edgecolor= 'none')
-    ax.plot_surface(X,Y,Z_minussigma, cmap = cmaps, edgecolor= 'none')
-    ax.plot_surface(X,Y,Z_plussigma, cmap = cmaps, edgecolor= 'none')
-    fig.colorbar(pl, shrink=0.5, aspect=5)
+    pl = ax.plot_surface(X,Y,Z, cmap = 'plasma', edgecolor= 'none')
+    # ax.plot_surface(X,Y,Z_minussigma, cmap = cmaps, edgecolor= 'none')
+    # ax.plot_surface(X,Y,Z_plussigma, cmap = cmaps, edgecolor= 'none')
+    # fig.colorbar(pl, shrink=0.5, aspect=5)
     ax.set_ylabel('Sigma of Gaussian sampled')
     ax.set_xlabel('Time along trajectory')
     ax.set_zlabel('Averaged Mean Square Error')

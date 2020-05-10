@@ -13,7 +13,7 @@ from torch.optim import lr_scheduler
 import time
 from modules_sigma import *
 from utils import *
-
+import math
 
 
 
@@ -275,26 +275,35 @@ class Model(object):
 
     def fixed_var_plot(self, args, acc_blocks_batch, target, output_plot):
         import matplotlib.pyplot as plt
+        import matplotlib.patches as patches
         from trajectory_plot import draw_lines
         # plots trajectories over timesteps - Plot the trajectories of the output of the NN and the target
         for i in range(args.batch_size):
             fig = plt.figure(figsize=(7, 7))
-            ax = fig.add_axes([0, 0, 1, 1])
+            ax = fig.add_subplot(111)
+            # ax = fig.add_axes([0, 0, 1, 1])
+            ax.xaxis.set_visible(True)
+            ax.yaxis.set_visible(True)
             xmin_t, ymin_t, xmax_t, ymax_t = draw_lines(target, i, linestyle=':', alpha=0.6)
             xmin_o, ymin_o, xmax_o, ymax_o = draw_lines(output_plot.detach().cpu().numpy(), i,
                                                         linestyle='-')
             ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
             ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
-            ax.set_xticks([])
-            ax.set_yticks([])
+            rect = patches.Rectangle((-1,-1),2,2, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
+            # ax.set_xticks(np.linspace(math.ceil(min(xmin_t, xmin_o)*10)/10, math.floor(max(xmax_t, xmax_o)*10)/10,2))
+            # ax.set_yticks(np.linspace(math.ceil(min(ymin_t, ymin_o)*10)/10, math.floor(max(ymax_t, ymax_o)*10)/10,2))
             block_names = ['layer ' + str(j) for j in range(len(args.edge_types_list))]
             # block_names = [ 'springs', 'charges' ]
             acc_text = [block_names[j] + ' acc: {:02.0f}%'.format(100 * acc_blocks_batch[i, j])
                         for j in range(acc_blocks_batch.shape[1])]
             acc_text = ', '.join(acc_text)
             plt.text(0.5, 0.95, acc_text, horizontalalignment='center', transform=ax.transAxes)
-
-            # plt.savefig(os.path.join(args.load_folder,str(i)+'_pred_and_true.png'), dpi=300)
+            ax.xaxis.set_visible(True)
+            ax.yaxis.set_visible(True)
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.savefig(os.path.join(args.load_folder,str(i)+'_pred_and_true.png'), dpi=300)
             plt.show()
 
     def isotropic_plot(self, args, data_decoder, edges, sigma, logits, logits_split, relations, target, zscorelist_x,
@@ -340,12 +349,15 @@ class Model(object):
         plt.xlabel('Time along Trajectory')
         plt.show()
         from trajectory_plot import draw_lines_sigma
-        from matplotlib.patches import Ellipse
+        from matplotlib.patches import Ellipse, Rectangle
         # plotting graphs for isotropic/anisotropic case - here we plot the values of sigma using
         # Ellipses which are same colour as plots (see draw_lines_sigma in trajectory_plot)
         for i in range(args.batch_size):
             fig = plt.figure(figsize=(7, 7))
-            ax = fig.add_axes([0, 0, 1, 1])
+            ax = fig.add_subplot(111)
+            # ax = fig.add_axes([0, 0, 1, 1])
+            ax.xaxis.set_visible(True)
+            ax.yaxis.set_visible(True)
             xmin_t, ymin_t, xmax_t, ymax_t = -1, -1, 1, 1
             xmin_o, ymin_o, xmax_o, ymax_o = -0.5, -0.5, 0.5, 0.5
             xmin_t, ymin_t, xmax_t, ymax_t = draw_lines_sigma(target, i, sigma_plot.detach().cpu().numpy(), ax,
@@ -355,14 +367,18 @@ class Model(object):
                                                               plot_ellipses=True)
             ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
             ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
-            ax.set_xticks([])
-            ax.set_yticks([])
+            rect = Rectangle((-1, -1), 2, 2, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
             block_names = ['layer ' + str(j) for j in range(len(args.edge_types_list))]
             # block_names = [ 'springs', 'charges' ]
             acc_text = [block_names[j] + ' acc: {:02.0f}%'.format(100 * acc_blocks_batch[i, j])
                         for j in range(acc_blocks_batch.shape[1])]
             acc_text = ', '.join(acc_text)
             plt.text(0.5, 0.95, acc_text, horizontalalignment='center', transform=ax.transAxes)
+            ax.xaxis.set_visible(True)
+            ax.yaxis.set_visible(True)
+            plt.xlabel('x')
+            plt.ylabel('y')
             # plt.savefig(os.path.join(args.load_folder,str(i)+'_pred_and_true.png'), dpi=300)
             plt.show()
         # z-score calcualtion
@@ -473,9 +489,13 @@ class Model(object):
                                                                               args.edge_types_list)
         # plot trajectories and sigma's - use ellipses to plot anisotropy - see draw_lines_anisotropic
         from trajectory_plot import draw_lines_anisotropic
+        from matplotlib.patches import Rectangle
         for i in range(args.batch_size):
             fig = plt.figure(figsize=(7, 7))
-            ax = fig.add_axes([0, 0, 1, 1])
+            ax = fig.add_subplot(111)
+            # ax = fig.add_axes([0, 0, 1, 1])
+            ax.xaxis.set_visible(True)
+            ax.yaxis.set_visible(True)
             xmin_t, ymin_t, xmax_t, ymax_t = draw_lines_anisotropic(target, i,
                                                                     sigma_plot.detach().cpu().numpy(),
                                                                     vel_plot, ax, linestyle=':',
@@ -485,14 +505,18 @@ class Model(object):
                 vel_plot, ax, linestyle='-', plot_ellipses=True)
             ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
             ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
-            ax.set_xticks([])
-            ax.set_yticks([])
+            rect = Rectangle((-1, -1), 2, 2, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
             block_names = ['layer ' + str(j) for j in range(len(args.edge_types_list))]
             # block_names = [ 'springs', 'charges' ]
             acc_text = [block_names[j] + ' acc: {:02.0f}%'.format(100 * acc_blocks_batch[i, j])
                         for j in range(acc_blocks_batch.shape[1])]
             acc_text = ', '.join(acc_text)
             plt.text(0.5, 0.95, acc_text, horizontalalignment='center', transform=ax.transAxes)
+            ax.xaxis.set_visible(True)
+            ax.yaxis.set_visible(True)
+            plt.xlabel('x')
+            plt.ylabel('y')
             # plt.savefig(os.path.join(args.load_folder,str(i)+'_pred_and_true.png'), dpi=300)
             plt.show()
         # for z score
