@@ -11,7 +11,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--num-train', type=int, default=10,
+parser.add_argument('--num-train', type=int, default=100,
                     help='Number of training simulations to generate.')
 parser.add_argument('--num-valid', type=int, default=10000,
                     help='Number of validation simulations to generate.')
@@ -92,9 +92,9 @@ if (args.timesteptest):
     """
     https://jakevdp.github.io/PythonDataScienceHandbook/04.12-three-dimensional-plotting.html
     """
-    y = delta_T
-    x = np.arange(0,int(args.length / args.sample_freq - 1)*0.001, 0.001)
-    Z = (np.asarray(mse_loc).mean(axis=2))
+    y = np.multiply(delta_T, 10.0)
+    x = np.multiply(np.arange(0,(int(args.length / args.sample_freq)-1)*0.001, 0.001), 10.0)
+    Z = np.multiply((np.asarray(mse_loc).mean(axis=2)), 100.0)
     X, Y = np.meshgrid(x,y)
     fig = plt.figure()
     ax = plt.axes(projection = '3d')
@@ -103,11 +103,14 @@ if (args.timesteptest):
     ax.set_xlabel('Time along trajectory')
     ax.set_zlabel('Averaged Mean Square Error')
     ax.view_init(45, -35)
-    fig.savefig(os.path.join(args.savefolder, 'timestepmse.png'))
+    fig.savefig(os.path.join(args.savefolder, 'timestepmse.eps'), format='eps')
+    # fig.savefig(os.path.join(args.savefolder, 'timestepmse.png'))
     ax.view_init(75,-35)
-    fig.savefig(os.path.join(args.savefolder, 'timestepmse_birdseye.png'))
+    fig.savefig(os.path.join(args.savefolder, 'timestepmse_birdseye.eps'), format='eps')
+    # fig.savefig(os.path.join(args.savefolder, 'timestepmse_birdseye.png'))
     ax.view_init(45,225)
-    fig.savefig(os.path.join(args.savefolder, 'timestepmse_rotated.png'))
+    fig.savefig(os.path.join(args.savefolder, 'timestepmse_rotated.eps'), format='eps')
+    # fig.savefig(os.path.join(args.savefolder, 'timestepmse_rotated.png'))
     plt.show()
     # for i in range(len(mse_loc[0])):
     #         fig = plt.figure()

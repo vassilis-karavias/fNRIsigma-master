@@ -100,7 +100,7 @@ parser.add_argument('--prior', action='store_true', default=False,
                     help='Whether to use sparsity prior.')
 
 ## arguments related to the simulation data ##
-parser.add_argument('--sim-folder', type=str, default='springcharge_pinknoise_5',
+parser.add_argument('--sim-folder', type=str, default='springcharge_5',
                     help='Name of the folder in the data folder to load simulation data from')
 parser.add_argument('--phys-folder', type=str, default='springcharge_physerrors_1',
                     help='Name of the folder in the data folder to load physical errors from')

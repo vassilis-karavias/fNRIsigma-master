@@ -1,20 +1,20 @@
 # Uncertainty in Neural Networks
 
-This repository contains the official PyTorch implementation of:
-
-**Uncertainty in Neural Relational Inference**  
-Candidate Number: 8271V
-Supervisor: Pietro Lió 
+Official code for the paper:
+Uncertainty in Neural Relational Inference Trajectory Reconstruction (Vasileios Karavias, Ben Day, Pietro Liò)
 
 
 
-**Abstract:**  Neural Networks (NNs) have been found to perform well in inferring the interaction graphs and reconstructing the trajectory of interacting particles, a problem applicable to many physical and biological phenomena. One downfall of the implementations to date is that they are not able to predict the uncertainties in their outputs, which would be useful in order to analyse the results, calibrate equipment, allow for more informed engineering and understanding of the system.  
-    The evaluation of errors in NNs has recently received a lot of attention and methods investigating obtaining uncertainty by setting random nodes to zero (dropout) or predictions of the errors from outputs of NNs with different structures have been investigated. However, these methods do not allow for propagation of uncertainties across time-steps in Markovian processes such as trajectory reconstruction. In this paper, I use the factorised neural relational inference (fNRI) model.
-    To allow for this propagation, the fNRI model was extended to output both a mean and a standard deviation for the position and velocity predictions which, together with an appropriate loss function, can account for uncertainty. A variety of loss functions were investigated including ideas from convexification and a Bayesian treatment of the problem.
-    I show that it is necessary to consider the physical meaning of the variables when considering the uncertainty, indicating that a significant component of the uncertainty is physical. I further show that the increased dimensionality allows the NN to find undesirable local minima. I show that it is possible to use convexification to force the model into a more desirable minimum. I also show that complicating the models is detrimental to performance. Finally, I show that the minimum the model reaches depends not only on the loss function but also on the choice of initial conditions. 
+**Abstract:** Neural networks used for multi-interaction trajectory reconstruction lack the ability to estimate the 
+uncertainty in their outputs, which would be useful to better analyse and understand the systems they model. 
+In this paper we extend the Factorised Neural Relational Inference model to output both a mean and a standard deviation
+for each component of the phase space vector, which together with an appropriate loss function, can account for 
+uncertainty. A variety of loss functions are investigated including ideas from convexification and a Bayesian treatment
+of the problem. We show that the physical meaning of the variables is important when considering the uncertainty and 
+demonstrate the existence of pathological local minima that are difficult to avoid during training.
 
 
-Much of the code here is based on https://github.com/ekwebb/fNRI (MIT licence) which in turn is based on https://github.com/ethanfetaya/NRI (MIT licence). The author would like to thank Ezra Webb, Ben Day, Helena Andres-Terre and Pietro Lió for making the codebase for the factorised Neural Relational Inference model (arXiv:1905.08721) publicly available on  https://github.com/ekwebb/fNRI (MIT licence). The author would also like to thank Thomas Kipf, Ethan Fetaya, Kuan-Chieh Wang, Max Welling & Richard Zemel for making the codebase for the Neural Relational Inference model (arXiv:1802.04687) publicly available on https://github.com/ethanfetaya/NRI (MIT licence).
+Much of the code here is based on https://github.com/ekwebb/fNRI (MIT licence) which in turn is based on https://github.com/ethanfetaya/NRI (MIT licence). The authors would like to thank Ezra Webb and Helena Andres-Terre for making the codebase for the factorised Neural Relational Inference model (arXiv:1905.08721) publicly available on  https://github.com/ekwebb/fNRI (MIT licence). The authors would also like to thank Thomas Kipf, Ethan Fetaya, Kuan-Chieh Wang, Max Welling & Richard Zemel for making the codebase for the Neural Relational Inference model (arXiv:1802.04687) publicly available on https://github.com/ethanfetaya/NRI (MIT licence).
 
 ### Requirements
 * Pytorch 1.3.1
@@ -53,7 +53,7 @@ The different models that can be trained are:\
  `--loss_type kalmanfilter` - trains using the full anisotropic model with a kalman filter. This model is based off of an algorithm suggested by: Multivariate Uncertainty in Deep Learning, Rebecca L. Russell, Christopher Reale, 2019, arXiv:1910.14215 \
  `--loss_type KL` - trains using the anisotropic model with the additional KL prior term\
  To plot the data from a model that has been trained, use the `--plot` argument. To load the data from the folder stored add the parameter: `--load-folder name_of_folder_the_data_is_stored`. Then to plot add: `--plot True`
- To change sigma add the parameter `--var value_of_sigma_sqrd`
+ To change sigma add the parameter `--var value_of_sigma_sqrd`. By default it is set to 5e-05. In order to reproduce the experiments for sigma_sqrd = 1e-10 you also need to add `--temp_softplus 10` to change the softplus temperature to 10. By default this is 5.
  To use the 3-layer MLP model or the model with random features modify the argument `--decoder`. For the 3-layer MLP use:  `--decoder mlp3` and for adding random features use `--decoder mlpr`. By default it is set to use the 2-layer MLP model.
  
  To train using the correlations model from the root folder run 

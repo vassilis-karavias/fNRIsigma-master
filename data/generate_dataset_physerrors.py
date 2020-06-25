@@ -13,7 +13,7 @@ import matplotlib
 import matplotlib.colors as mcolors
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--num-train', type=int, default=10,
+parser.add_argument('--num-train', type=int, default=20,
                     help='Number of training simulations to generate.')
 parser.add_argument('--num-valid', type=int, default=10000,
                     help='Number of validation simulations to generate.')
@@ -29,7 +29,7 @@ parser.add_argument('--n-balls', type=int, default=5,
                     help='Number of balls in the simulation.')
 parser.add_argument('--seed', type=int, default=42,
                     help='Random seed.')
-parser.add_argument('--savefolder', type=str, default='springcharge_physerrors__1',
+parser.add_argument('--savefolder', type=str, default='springcharge_physerrors_1',
                     help='name of folder to save everything in')
 parser.add_argument('--sim-type', type=str, default='springcharge',
                     help='Type of simulation system')
@@ -79,7 +79,7 @@ def generate_mse_pertime(num_sims, length, sample_freq):
     return mse_loc, mse_vel, sigma, mse_loc_var, mse_vel_var
 
 if args.sigmatest:
-    print("Calculating MSE over time due to computational errors")
+    print("Calculating MSE over time due to physical errors")
     mse_loc, mse_vel, sigma, mse_loc_var, mse_vel_var= generate_mse_pertime(args.num_train, args.length, args.sample_freq)
     # dim 0 on mse is different sigma, dim 1 is different times along the motion, then (x,y)
     mse_model = mse_loc.mean(axis = 2)
@@ -94,9 +94,9 @@ if args.sigmatest:
     plt.ylabel('Averaged Mean Square Error/(arbitrary units)')
     plt.show()
 
-    y = sigma
-    x = np.arange(0,int(args.length / args.sample_freq - 1)*0.001, 0.001)
-    Z = (np.asarray(mse_loc).mean(axis=2))
+    y = np.multiply(sigma, 10.0)
+    x = np.multiply(np.arange(0,int(args.length / args.sample_freq - 1)*0.001, 0.001), 10.0)
+    Z = np.multiply(np.asarray(mse_loc).mean(axis=2), 100.0)
     Z_plussigma = (np.asarray(mse_loc + mse_loc_var)).mean(axis=2)
     Z_minussigma = (np.asarray(mse_loc - mse_loc_var)).mean(axis=2)
     X, Y = np.meshgrid(x,y)
@@ -112,15 +112,19 @@ if args.sigmatest:
     # ax.plot_surface(X,Y,Z_minussigma, cmap = cmaps, edgecolor= 'none')
     # ax.plot_surface(X,Y,Z_plussigma, cmap = cmaps, edgecolor= 'none')
     # fig.colorbar(pl, shrink=0.5, aspect=5)
+    ax.set_zticks([0,0.05,0.10,0.15,0.20,0.25])
     ax.set_ylabel('Sigma of Gaussian sampled')
     ax.set_xlabel('Time along trajectory')
     ax.set_zlabel('Averaged Mean Square Error')
     ax.view_init(45, -35)
-    fig.savefig(os.path.join(args.savefolder, 'sigmamse.png'))
+    fig.savefig(os.path.join(args.savefolder, 'sigmamse.eps'), format='eps')
+    # fig.savefig(os.path.join(args.savefolder, 'sigmamse.png'))
     ax.view_init(75,-35)
-    fig.savefig(os.path.join(args.savefolder, 'sigmamse_birdseye.png'))
+    fig.savefig(os.path.join(args.savefolder, 'sigmamse_birdseye.eps'), format='eps')
+    # fig.savefig(os.path.join(args.savefolder, 'sigmamse_birdseye.png'))
     ax.view_init(45,225)
-    fig.savefig(os.path.join(args.savefolder, 'sigmamse_rotated.png'))
+    fig.savefig(os.path.join(args.savefolder, 'sigmamse_rotated.eps'), format='eps')
+    # fig.savefig(os.path.join(args.savefolder, 'sigmamse_rotated.png'))
     plt.show()
     # for i in range(len(mse_loc[0])):
     #         fig = plt.figure()

@@ -18,7 +18,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 
 from modules_logsigma import *
-from utils import *
+from utils_logsigma import *
 
 parser = argparse.ArgumentParser()
 ## arguments related to training ##
@@ -687,8 +687,10 @@ def train(epoch, best_val_loss):
     #                                 e.set_clip_box(ax.bbox)
     # #                               e.set_alpha(0.6)
     #                                 e.set_facecolor(colour)
-                            ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
-                            ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
+    #                         ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
+    #                         ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
+                            ax.set_xlim([-1,1])
+                            ax.set_ylim([-1, 1])
                             block_names = ['layer ' + str(j) for j in range(len(args.edge_types_list))]
                             # block_names = [ 'springs', 'charges' ]
                             acc_text = [block_names[j] + ' acc: {:02.0f}%'.format(100 * acc_blocks_batch[i, j])
@@ -822,12 +824,12 @@ def train(epoch, best_val_loss):
                         zscore = (output_plot - target) / sigma_plot
                         zscorelist.append(zscore)
 
-                    loss_nll, loss_1, loss_2 = nll_gaussian_multivariatesigma(output, target,  logsigmaone, accelone)
-                    loss_nll_var = nll_gaussian_var_multivariatesigma(output, target, logsigmaone, accelone)
+                    loss_nll, loss_1, loss_2 = nll_gaussian_multivariatesigma_efficient(output, target,  logsigmaone, accelone)
+                    loss_nll_var = nll_gaussian_var_multivariatesigma_efficient(output, target, logsigmaone, accelone)
 
                     output_M, sigma_M, accel_M = decoder(data_decoder, edges, rel_rec, rel_send, logsigma, True, True, args.temp_softplus, args.prediction_steps)
-                    loss_nll_M, loss_1_M, loss_2_M = nll_gaussian_multivariatesigma(output_M, target, sigma_M, accel_M)
-                    loss_nll_M_var = nll_gaussian_var_multivariatesigma(output_M, target, sigma_M, accel_M)
+                    loss_nll_M, loss_1_M, loss_2_M = nll_gaussian_multivariatesigma_efficient(output_M, target, sigma_M, accel_M)
+                    loss_nll_M_var = nll_gaussian_var_multivariatesigma_efficient(output_M, target, sigma_M, accel_M)
                     logsigma = logsigmaone
 
 
@@ -1202,12 +1204,12 @@ def test():
                                 # plt.savefig(os.path.join(args.load_folder,str(i)+'_pred_and_true.png'), dpi=300)
                                 plt.show()
 
-                        loss_nll, loss_1, loss_2 = nll_gaussian_multivariatesigma(output, target, logsigmaone, accelone)  # compute the reconstruction loss. nll_gaussian is from utils.py
-                        loss_nll_var = nll_gaussian_var_multivariatesigma(output, target, logsigmaone, accelone)
+                        loss_nll, loss_1, loss_2 = nll_gaussian_multivariatesigma_efficient(output, target, logsigmaone, accelone)  # compute the reconstruction loss. nll_gaussian is from utils.py
+                        loss_nll_var = nll_gaussian_var_multivariatesigma_efficient(output, target, logsigmaone, accelone)
 
                         output_M, sigma_M, accel_M = decoder(data_decoder, edges, rel_rec, rel_send, logsigma, True, True,  args.temp_softplus, args.prediction_steps)
-                        loss_nll_M, loss_1_M, loss_2_M = nll_gaussian_multivariatesigma(output_M, target, sigma_M, accel_M)
-                        loss_nll_M_var = nll_gaussian_var_multivariatesigma(output_M, target, sigma_M, accel_M)
+                        loss_nll_M, loss_1_M, loss_2_M = nll_gaussian_multivariatesigma_efficient(output_M, target, sigma_M, accel_M)
+                        loss_nll_M_var = nll_gaussian_var_multivariatesigma_efficient(output_M, target, sigma_M, accel_M)
 
                         perm_test.append(perm)
                         acc_test.append(acc_perm)

@@ -287,8 +287,10 @@ class Model(object):
             xmin_t, ymin_t, xmax_t, ymax_t = draw_lines(target, i, linestyle=':', alpha=0.6)
             xmin_o, ymin_o, xmax_o, ymax_o = draw_lines(output_plot.detach().cpu().numpy(), i,
                                                         linestyle='-')
-            ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
-            ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
+            # ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
+            # ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])#
+            ax.set_xlim([-1,1])
+            ax.set_ylim([-1,1])
             rect = patches.Rectangle((-1,-1),2,2, edgecolor='r', facecolor='none')
             ax.add_patch(rect)
             # ax.set_xticks(np.linspace(math.ceil(min(xmin_t, xmin_o)*10)/10, math.floor(max(xmax_t, xmax_o)*10)/10,2))
@@ -365,8 +367,10 @@ class Model(object):
             xmin_o, ymin_o, xmax_o, ymax_o = draw_lines_sigma(output_plot.detach().cpu().numpy(), i,
                                                               sigma_plot.detach().cpu().numpy(), ax, linestyle='-',
                                                               plot_ellipses=True)
-            ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
-            ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
+            # ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
+            # ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
+            ax.set_xlim([-1,1])
+            ax.set_ylim([-1,1])
             rect = Rectangle((-1, -1), 2, 2, edgecolor='r', facecolor='none')
             ax.add_patch(rect)
             block_names = ['layer ' + str(j) for j in range(len(args.edge_types_list))]
@@ -488,9 +492,11 @@ class Model(object):
                                                                               relations,
                                                                               args.edge_types_list)
         # plot trajectories and sigma's - use ellipses to plot anisotropy - see draw_lines_anisotropic
-        from trajectory_plot import draw_lines_anisotropic
+        from trajectory_plot import draw_lines_anisotropic, draw_lines_sigma_animation
         from matplotlib.patches import Rectangle
+
         for i in range(args.batch_size):
+            # draw_lines_sigma_animation(target, output_plot, i, sigma_plot, vel_plot)
             fig = plt.figure(figsize=(7, 7))
             ax = fig.add_subplot(111)
             # ax = fig.add_axes([0, 0, 1, 1])
@@ -503,8 +509,10 @@ class Model(object):
             xmin_o, ymin_o, xmax_o, ymax_o = draw_lines_anisotropic(
                 output_plot.detach().cpu().numpy(), i, sigma_plot.detach().cpu().numpy(),
                 vel_plot, ax, linestyle='-', plot_ellipses=True)
-            ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
-            ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
+            # ax.set_xlim([min(xmin_t, xmin_o), max(xmax_t, xmax_o)])
+            # ax.set_ylim([min(ymin_t, ymin_o), max(ymax_t, ymax_o)])
+            ax.set_xlim([-1,1])
+            ax.set_ylim([-1,1])
             rect = Rectangle((-1, -1), 2, 2, edgecolor='r', facecolor='none')
             ax.add_patch(rect)
             block_names = ['layer ' + str(j) for j in range(len(args.edge_types_list))]
@@ -566,6 +574,7 @@ class Model(object):
         # plots the z-score graphs
         import matplotlib.pyplot as plt
         from scipy.optimize import curve_fit
+        from scipy.stats import chisquare
         # average over all timesteps
         zscorelistintx = np.empty((0))
         zscorelistinty = np.empty((0))
@@ -601,18 +610,22 @@ class Model(object):
         # var = 1/N SUM(y*(x-mean) ** 2)
         sigma_x = np.sqrt(np.sum(histdatax * (xcoords - mean_gaussian_x) ** 2) / numberofpoints)
         # Fit to Gaussian
-        # optimised_params_x, pcov = curve_fit(gaussian, xcoords, histdatax, p0=[1, mean_gaussian_x, sigma_x])
-        # plt.plot(xcoords, gaussian(xcoords, *optimised_params_x), label='fit')
+        optimised_params_x, pcov = curve_fit(gaussian, xcoords, histdatax, p0=[1, mean_gaussian_x, sigma_x])
+        plt.plot(xcoords, gaussian(xcoords, *optimised_params_x), label='fit')
         # fit ro Lorentzian
-        # optimised_params_lor_x, pcov = curve_fit(lorentzian, xcoords, histdatax,
-        #                                          p0=[1, mean_gaussian_x, sigma_x])
-        # plt.plot(xcoords, lorentzian(xcoords, *optimised_params_lor_x), 'k')
+        optimised_params_lor_x, pcov = curve_fit(lorentzian, xcoords, histdatax,
+                                                 p0=[1, mean_gaussian_x, sigma_x])
+        plt.plot(xcoords, lorentzian(xcoords, *optimised_params_lor_x), 'k')
         plt.xlabel("z-score")
         plt.ylabel("frequency")
         plt.text(60, .025, r'$\mu=100,\ \sigma=15$')
         plt.xlim(-4, 4)
         plt.savefig('zscorepartimestep.png')
         plt.show()
+        area_under_gauss, p_1 = chisquare(f_obs = histdatax, f_exp = gaussian(xcoords, *optimised_params_x))
+        area_under_lor, p_2 = chisquare(f_obs= histdatax, f_exp = lorentzian(xcoords, *optimised_params_lor_x))
+        # area_under_gauss = (((gaussian(xcoords, *optimised_params_x) - histdatax) ** 2)/ (gaussian(xcoords, *optimised_params_x))).mean(axis=None)
+        # area_under_lor = (((lorentzian(xcoords, *optimised_params_lor_x) - histdatax) ** 2)/ (lorentzian(xcoords, *optimised_params_lor_x))).mean(axis= None)
         # get histogram distribution for terms perpendicular to velocity
         histdatay, bin_edges, patches = plt.hist(zscorelistinty, bins, density=True)
 
@@ -657,11 +670,13 @@ class Model(object):
         plt.savefig('zscoreorth.png')
         plt.show()
 
-        # print("Gaussian Fit parallel to vel with mean: " + str(
-        #     optimised_params_x[1]) + " and std: " + str(optimised_params_x[2]))
-        # print(
-        #     "Lorentzian Fit parallel to vel with mean: " + str(optimised_params_lor_x[1]) + " and std: " + str(
-        #         optimised_params_lor_x[2]))
+        print("Gaussian Fit parallel to vel with mean: " + str(
+            optimised_params_x[1]) + " and std: " + str(optimised_params_x[2]))
+        print(
+            "Lorentzian Fit parallel to vel with mean: " + str(optimised_params_lor_x[1]) + " and std: " + str(
+                optimised_params_lor_x[2]))
+        print("Gaussian Fit parallel to vel area between curves: " + str(area_under_gauss) + ". p value: " + str(p_1))
+        print("Lorentzian Fit parallel to vel area between curves: " + str(area_under_lor) + ". p value: " + str(p_2))
         # print(
         #     "Gaussian Fit perpendicular to vel with mean: " + str(optimised_params_y[1]) + " and std: " + str(
         #         optimised_params_y[2]))
